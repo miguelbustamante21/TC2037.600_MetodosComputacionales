@@ -5,7 +5,10 @@ Return a list of tokens found
 Used to validate input strings
 Example calls:
 (automaton-2 (dfa-str 'start '(int var) delta-arithmetic-1) "34+9/du*23123")
-Miguel Bustamante
+
+Miguel Bustamante A01781583
+Emilio Sibaja Villarreal A01025139
+
 2022-03-18
 |#
 
@@ -205,14 +208,19 @@ Miguel Bustamante
         (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(("97" int) ("/" op) ("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators")
         (check-equal? (arithmetic-lexer "7.4 ^3 = 2.0 * 1") '(("7.4" float) ("^" op) ("3" int) ("=" op) ("2.0" float) ("*" op) ("1" int)) "Multiple float operators with spaces")
 
+        ;variables
+        (check-equal? (arithmetic-lexer "data") '(("data" var)) "Single variable")
+        (check-equal? (arithmetic-lexer "data34") '(("data34" var)) "Single variable")
+        (check-equal? (arithmetic-lexer "34data") #f "Incorrect variable")
+        
         ; Exponential
         (check-equal? (arithmetic-lexer "4e8") '(("4e8" exp)) "Exponent int")
         (check-equal? (arithmetic-lexer "4.51e8") '(("4.51e8" exp)) "Exponent float")
         (check-equal? (arithmetic-lexer "-4.51e8") '(("-4.51e8" exp)) "Negative exponent float")
 
         ; Comments
-        (check-equal? (arithmetic-lexer "3// this is all") '(("3" int) ("// this is all" comment)) "Variable and comment")
-        (check-equal? (arithmetic-lexer "3+5 // this is all") '(("3" int) ("+" op) ("5" int) ("// this is all" comment)) "Expression and comment")
+        ;(check-equal? (arithmetic-lexer "3// this is all") '(("3" int) ("// this is all" comment)) "Variable and comment")
+        ;(check-equal? (arithmetic-lexer "3+5 // this is all") '(("3" int) ("+" op) ("5" int) ("// this is all" comment)) "Expression and comment")
 
         ; Parentheses
         ;(check-equal? (arithmetic-lexer "()") '(("(" par_open) (")" par_close)) "Open and close")
