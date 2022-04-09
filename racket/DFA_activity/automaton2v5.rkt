@@ -116,7 +116,7 @@ Emilio Sibaja Villarreal A01025139
             [(char-numeric? character) (values #f 'var)]
             [(operator? character) (values 'var 'op)]
             [(par_close? character) (values #f 'par_close)]
-            [(n_space? character) (values #f 'nSpace)]
+            [(n_space? character) (values 'var 'nSpace)]
             [else (values #f 'fail)])]
     ['op (cond
            [(char-numeric? character) (values 'op 'int)]
@@ -152,6 +152,7 @@ Emilio Sibaja Villarreal A01025139
           [(pre_comment? character) (values #f 'pre_comm)]
           [(o_space? character) (values #f 'oSpace)]
           [(par_open? character) (values #f 'par_open)]
+          [(or (char-alphabetic? character) (eq? character #\_)) (values #f 'var)]
           [else (values #f 'fail)])]
 
     ['nSpace(cond
@@ -193,34 +194,39 @@ Emilio Sibaja Villarreal A01025139
     (test-suite
         " Test function: arithmetic-lexer"
 
-        ;Operations with floats, ints and variables
-        (check-equal? (arithmetic-lexer "6 = 2 + 1") '(("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators with spaces")
-        (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(("97" int) ("/" op) ("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators")
-        (check-equal? (arithmetic-lexer "7.4 ^3 = 2.0 * 1") '(("7.4" float) ("^" op) ("3" int) ("=" op) ("2.0" float) ("*" op) ("1" int)) "Multiple float operators with spaces")
-        ;(check-equal? (arithmetic-lexer "  2 + 1") '(("2" int) ("+" op) ("1" int)) "Spaces before")
-        ;(check-equal? (arithmetic-lexer "  2 + 1 ") '(("2" int) ("+" op) ("1" int)) "Spaces before and after")
-        (check-equal? (arithmetic-lexer "2+1") '(("2" int) ("+" op) ("1" int)) "Binary operation ints")
-        (check-equal? (arithmetic-lexer "5.2+3") '(("5.2" float) ("+" op) ("3" int)) "Float and int")
-        (check-equal? (arithmetic-lexer "5.2+3.7") '(("5.2" float) ("+" op) ("3.7" float)) "Binary operation floats")
-        (check-equal? (arithmetic-lexer "one+two") '(("one" var) ("+" op) ("two" var)) "Binary operation variables")
-        (check-equal? (arithmetic-lexer "2 + 1") '(("2" int) ("+" op) ("1" int)) "Binary operation with spaces")
-        (check-equal? (arithmetic-lexer "6 = 2 + 1") '(("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators with spaces")
-        (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(("97" int) ("/" op) ("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators")
-        (check-equal? (arithmetic-lexer "7.4 ^3 = 2.0 * 1") '(("7.4" float) ("^" op) ("3" int) ("=" op) ("2.0" float) ("*" op) ("1" int)) "Multiple float operators with spaces")
-
-        ;variables
-        (check-equal? (arithmetic-lexer "data") '(("data" var)) "Single variable")
-        (check-equal? (arithmetic-lexer "data34") '(("data34" var)) "Single variable")
-        (check-equal? (arithmetic-lexer "34data") #f "Incorrect variable")
-        
-        ; Exponential
+         ; Numerical types
+        (check-equal? (arithmetic-lexer "2") '(("2" int)) "Single digit")
+        (check-equal? (arithmetic-lexer "261") '(("261" int)) "Multi digit int")
+        (check-equal? (arithmetic-lexer "-63") '(("-63" int)) "Negative int")
+        (check-equal? (arithmetic-lexer "5.23") '(("5.23" float)) "Single float")
+        (check-equal? (arithmetic-lexer "-5.23") '(("-5.23" float)) "Negative float")
+        (check-equal? (arithmetic-lexer ".23") #f "Incorrect float")
+        (check-equal? (arithmetic-lexer "2.2.3") #f "Incorrect float")
         (check-equal? (arithmetic-lexer "4e8") '(("4e8" exp)) "Exponent int")
         (check-equal? (arithmetic-lexer "4.51e8") '(("4.51e8" exp)) "Exponent float")
         (check-equal? (arithmetic-lexer "-4.51e8") '(("-4.51e8" exp)) "Negative exponent float")
 
-        ; Comments
-        ;(check-equal? (arithmetic-lexer "3// this is all") '(("3" int) ("// this is all" comment)) "Variable and comment")
-        ;(check-equal? (arithmetic-lexer "3+5 // this is all") '(("3" int) ("+" op) ("5" int) ("// this is all" comment)) "Expression and comment")
+        ; Variables
+        (check-equal? (arithmetic-lexer "data") '(("data" var)) "Single variable")
+        (check-equal? (arithmetic-lexer "data34") '(("data34" var)) "Single variable")
+        (check-equal? (arithmetic-lexer "34data") #f "Incorrect variable")
+
+        (check-equal? (arithmetic-lexer "2+1") '(("2" int) ("+" op) ("1" int)) "Binary operation ints")
+        (check-equal? (arithmetic-lexer "/1") #f "Invalid expression")
+        (check-equal? (arithmetic-lexer "6 + 4 *+ 1") #f "Invalid expression")
+        (check-equal? (arithmetic-lexer "5.2+3") '(("5.2" float) ("+" op) ("3" int)) "Float and int")
+        (check-equal? (arithmetic-lexer "5.2+3.7") '(("5.2" float) ("+" op) ("3.7" float)) "Binary operation floats")
+
+        ; Operations with variables
+        (check-equal? (arithmetic-lexer "one+two") '(("one" var) ("+" op) ("two" var)) "Binary operation variables")
+        (check-equal? (arithmetic-lexer "one+two/45.2") '(("one" var) ("+" op) ("two" var) ("/" op) ("45.2" float)) "Mixed variables numbers")
+
+        ; Spaces between operators
+        (check-equal? (arithmetic-lexer "2 + 1") '(("2" int) ("+" op) ("1" int)) "Binary operation with spaces")
+        (check-equal? (arithmetic-lexer "6 = 2 + 1") '(("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators with spaces")
+        (check-equal? (arithmetic-lexer "one + two / 45.2") '(("one" var) ("+" op) ("two" var) ("/" op) ("45.2" float)) "Mixed variables numbers spaces")
+        (check-equal? (arithmetic-lexer "97 /6 = 2 + 1") '(("97" int) ("/" op) ("6" int) ("=" op) ("2" int) ("+" op) ("1" int)) "Multiple operators")
+        (check-equal? (arithmetic-lexer "7.4 ^3 = 2.0 * 1") '(("7.4" float) ("^" op) ("3" int) ("=" op) ("2.0" float) ("*" op) ("1" int)) "Multiple float operators with spaces")
 
         ; Parentheses
         ;(check-equal? (arithmetic-lexer "()") '(("(" par_open) (")" par_close)) "Open and close")
@@ -230,7 +236,6 @@ Emilio Sibaja Villarreal A01025139
         (check-equal? (arithmetic-lexer "(4 + 5)") '(("(" par_open) ("4" int) ("+" op) ("5" int) (")" par_close)) "Open expression close")
         (check-equal? (arithmetic-lexer "(4 + 5) * (6 - 3)") '(("(" par_open) ("4" int) ("+" op) ("5" int) (")" par_close) ("*" op) ("(" par_open) ("6" int) ("-" op) ("3" int) (")" par_close)) "Open expression close")
 
-        
     ))
 
 ; Start the execution of the test suite
