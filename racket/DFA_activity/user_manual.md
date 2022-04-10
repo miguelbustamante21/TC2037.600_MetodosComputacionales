@@ -2,7 +2,7 @@
 
 #### Miguel Bustamante A01781583
 #### Ivan Diaz A01365801
-#### Emiliano Sibaja A01025139
+#### Emilio Sibaja A01025139
 
 # Manual de Usuario
 ## Como inicializar el programa.
