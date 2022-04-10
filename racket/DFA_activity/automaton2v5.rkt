@@ -8,6 +8,7 @@ Example calls:
 
 Miguel Bustamante A01781583
 Emilio Sibaja Villarreal A01025139
+Ivan Diaz Lara A01365801
 
 2022-03-18
 |#
