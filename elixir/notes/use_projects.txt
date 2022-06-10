@@ -1,0 +1,10 @@
+Estando en el folder del proyecto escribir: 
+iex -S mix
+
+Así podemos ejecutar archivos dentro del proyecto 
+Si salimos de elixir usantro ctrl c 
+
+podemos usar mix test para ver si las pruebas corren (las que estan en el folder de test) 
+
+Los archivos ex son códigos compilados
+Los archivos exs son códigos interpretados

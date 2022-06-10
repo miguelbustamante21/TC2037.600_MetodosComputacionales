@@ -1,0 +1,33 @@
+Links: 
+
+https://regex101.com/
+
+https://hexdocs.pm/elixir/1.13/Regex.html
+
+https://www.json.org/json-en.html
+
+Tarea: 
+
+Definir todos los tokens posibles (punctuation, numbers, keys, letters)
+
+Es una llave? no 
+Es tal? 
+Si, dime cual para escribir el resultado 
+
+c++
+https://elvex.ugr.es/decsai/c/apuntes/tokens.pdf
+
+python 
+https://www.oreilly.com/library/view/python-in-a/0596100469/ch04s01.html#:~:text=literals%20and%20comments.-,Tokens,covered%20in%20the%20following%20sections.
+
+R 
+https://www.rdocumentation.org/packages/quanteda/versions/1.5.2/topics/tokens
+
+Crear un archivo html en la terminal de elixir (iex)
+File.write("myhtml.html", "<html>'\n<body>HELLO THERE<\body>\n<\html>")
+
+Pseudocódigo: 
+
+Ya leí la lista 
+
+/(["'])(?:(?=(\\?))\2.)*?\1(\s*)/gm this is for reading strings 
